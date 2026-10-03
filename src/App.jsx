@@ -1,27 +1,32 @@
-import { useState, useEffect } from 'react'
-import { supabase } from './lib/supabase'
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+import Home from './pages/Home'
 import Auth from './pages/Auth'
 import CreateStore from './pages/CreateStore'
 import CreateProduct from './pages/CreateProduct'
-function App(){
-  const [user,setUser]=useState(null)
-  const [step,setStep]=useState('store')
-  useEffect(()=>{
-    supabase.auth.getSession().then(({data})=>{ setUser(data.session?.user) })
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session)=>{
-      setUser(session?.user)
-    })
-    return ()=> subscription.unsubscribe()
-  },[])
-  if(!user) return <Auth />
-  return (
-    <div>
-      <div style={{display:'flex', gap:'10px', justifyContent:'center', marginTop:'20px'}}>
-        <button onClick={()=>setStep('store')} style={{padding:'8px 12px', borderRadius:'20px', border:'1px solid black', background:step==='store'?'black':'white', color:step==='store'?'white':'black'}}>Boutique</button>
-        <button onClick={()=>setStep('product')} style={{padding:'8px 12px', borderRadius:'20px', border:'1px solid black', background:step==='product'?'black':'white', color:step==='product'?'white':'black'}}>Produit</button>
-      </div>
-      {step==='store'? <CreateStore /> : <CreateProduct />}
+import Dashboard from './pages/Dashboard'
+
+function Navbar(){
+  return(
+    <div style={{display:'flex', gap:'12px', padding:'15px', borderBottom:'1px solid #eee', fontFamily:'sans-serif', overflowX:'auto'}}>
+      <Link to="/" style={{fontWeight:'bold', textDecoration:'none', color:'black', whiteSpace:'nowrap'}}>NovaMinding</Link>
+      <Link to="/auth" style={{textDecoration:'none', color:'#333'}}>Connexion</Link>
+      <Link to="/create-store" style={{textDecoration:'none', color:'#333', whiteSpace:'nowrap'}}>Ma Boutique</Link>
+      <Link to="/create-product" style={{textDecoration:'none', color:'#333', whiteSpace:'nowrap'}}>Ajouter Produit</Link>
+      <Link to="/dashboard" style={{textDecoration:'none', color:'black', fontWeight:'bold', whiteSpace:'nowrap'}}>💰 Wallet + Boost</Link>
     </div>
   )
 }
-export default App
+export default function App(){
+  return(
+    <BrowserRouter>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/create-store" element={<CreateStore />} />
+        <Route path="/create-product" element={<CreateProduct />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+      </Routes>
+    </BrowserRouter>
+  )
+}

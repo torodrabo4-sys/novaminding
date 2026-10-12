@@ -156,7 +156,7 @@ export default function App(){
     const finalDesc=descRef.current?descRef.current.innerHTML:''
     const extra={coverPhoto,thumbnail:productForm.thumbnail||thumbPreview||coverPhoto,fileName:productForm.fileName,faqs:faqs.filter(f=>f.q&&f.a),duration:productForm.duration,isFree:productForm.isFree,isPayant:productForm.isPayant,sendEmail:productForm.sendEmail,hideSales:productForm.hideSales,promoPrice:productForm.promoPrice,stockLimit:productForm.stockLimit?parseInt(productForm.stockLimit):null}
     const fullDesc=finalDesc+'<!--META:'+JSON.stringify(extra)+'-→'
-    const payload={title:productForm.title,price:finalPrice,description:fullDesc,store_id:selectedBoutique.id,owner_id:user.id,is_public:true,stock_limit:extra.stockLimit}
+    const slugValue=editingProduct?.slug||productForm.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').substring(0,40)+'-'+Math.random().toString(36).substring(2,6); const payload={name:productForm.title,slug:slugValue,price:finalPrice,promo_price:extra.promoPrice?parseInt(extra.promoPrice):null,is_free:!!productForm.isFree,description:finalDesc,cover_url:extra.coverPhoto||null,thumbnail_url:extra.thumbnail||null,file_url:extra.fileName||null,faq:extra.faqs,rarity_duration:extra.duration||null,email_after:extra.sendEmail?'active':null,hide_sales:!!extra.hideSales,store_id:selectedBoutique.id,owner_id:user.id}
     if(editingProduct){
       const {error}=await supabase.from('products').update(payload).eq('id',editingProduct.id)
       if(error){ showToast(error.message); return }
